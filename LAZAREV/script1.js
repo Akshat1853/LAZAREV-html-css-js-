@@ -42,4 +42,44 @@ function navAnimation() {
   });
 }
 
+function page3VideoAnimation() {
+  var page3Center = document.querySelector(".page3-center");
+  var video = document.querySelector("#page3 #video2");
+
+  page3Center.addEventListener("click", function () {
+    video.play();
+
+    // 🔥 hide button
+    gsap.to(page3Center, {
+      opacity: 0,
+      pointerEvents: "none",
+      duration: 0.3,
+    });
+
+    gsap.to(video, {
+      transform: "scaleX(1) scaleY(1)",
+      opacity: 1,
+      borderRadius: 0,
+    });
+  });
+
+  video.addEventListener("click", function () {
+    video.pause();
+
+    // 🔥 show button again
+    gsap.to(page3Center, {
+      opacity: 1,
+      pointerEvents: "all",
+      duration: 0.3,
+    });
+
+    gsap.to(video, {
+      transform: "scaleX(0.7) scaleY(0)",
+      opacity: 0,
+      borderRadius: "30px",
+    });
+  });
+}
+
 navAnimation();
+page3VideoAnimation();
