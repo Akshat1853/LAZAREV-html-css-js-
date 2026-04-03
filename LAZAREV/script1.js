@@ -1,3 +1,40 @@
+function locomotiveAnimation() {
+  gsap.registerPlugin(ScrollTrigger);
+
+  const locoScroll = new LocomotiveScroll({
+    el: document.querySelector(".main"),
+    smooth: true,
+    tablet: { smooth: true },
+    smartphone: { smooth: true },
+  });
+
+  locoScroll.on("scroll", ScrollTrigger.update);
+
+  ScrollTrigger.scrollerProxy(".main", {
+    scrollTop(value) {
+      return arguments.length
+        ? locoScroll.scrollTo(value, 0, 0)
+        : locoScroll.scroll.instance.scroll.y;
+    },
+    getBoundingClientRect() {
+      return {
+        top: 0,
+        left: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+    },
+
+    // ✅ CRITICAL FIX
+    pinType: document.querySelector(".main").style.transform
+      ? "transform"
+      : "fixed",
+  });
+
+  ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
+  ScrollTrigger.refresh();
+}
+
 function navAnimation() {
   var nav = document.querySelector("nav");
 
@@ -14,9 +51,7 @@ function navAnimation() {
     });
     tl.to(".nav-part2 h5 span", {
       y: 0,
-      stagger: {
-        amount: 0.1,
-      },
+      stagger: { amount: 0.1 },
     });
   });
 
@@ -25,9 +60,7 @@ function navAnimation() {
 
     tl.to(".nav-part2 h5 span", {
       y: 25,
-      stagger: {
-        amount: 0.1,
-      },
+      stagger: { amount: 0.1 },
     });
 
     tl.to(".nav-part2 h5", {
@@ -49,7 +82,6 @@ function page3VideoAnimation() {
   page3Center.addEventListener("click", function () {
     video.play();
 
-    // 🔥 hide button
     gsap.to(page3Center, {
       opacity: 0,
       pointerEvents: "none",
@@ -57,7 +89,7 @@ function page3VideoAnimation() {
     });
 
     gsap.to(video, {
-      transform: "scaleX(1) scaleY(1)",
+      scale: 1,
       opacity: 1,
       borderRadius: 0,
     });
@@ -66,7 +98,6 @@ function page3VideoAnimation() {
   video.addEventListener("click", function () {
     video.pause();
 
-    // 🔥 show button again
     gsap.to(page3Center, {
       opacity: 1,
       pointerEvents: "all",
@@ -74,7 +105,7 @@ function page3VideoAnimation() {
     });
 
     gsap.to(video, {
-      transform: "scaleX(0.7) scaleY(0)",
+      scale: 0.7,
       opacity: 0,
       borderRadius: "30px",
     });
@@ -85,17 +116,44 @@ function page4Animation() {
   var sections = document.querySelectorAll(".sec-right");
 
   sections.forEach((elem) => {
+    let video = elem.querySelector("video");
+
     elem.addEventListener("mouseenter", function () {
-      elem.childNodes[3].style.opacity = 1;
-      elem.childNodes[3].play();
+      video.style.opacity = 1;
+      video.play();
     });
+
     elem.addEventListener("mouseleave", function () {
-      elem.childNodes[3].style.opacity = 0;
-      elem.childNodes[3].load();
+      video.style.opacity = 0;
+      video.load();
     });
   });
 }
 
-navAnimation();
-page3VideoAnimation();
-page4Animation();
+function page6Animation() {
+  const parts = ["#btm6-part2", "#btm6-part3", "#btm6-part4"];
+
+  parts.forEach((part) => {
+    gsap.from(`${part} h4`, {
+      x: 100,
+      opacity: 0,
+      duration: 1,
+      stagger: { amount: 0.3 },
+      scrollTrigger: {
+        trigger: part,
+        scroller: ".main", // ✅ correct
+        start: "top 80%",
+        end: "top 10%",
+        scrub: true,
+      },
+    });
+  });
+}
+
+window.addEventListener("load", () => {
+  locomotiveAnimation();
+  navAnimation();
+  page3VideoAnimation();
+  page4Animation();
+  page6Animation();
+});
